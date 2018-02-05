@@ -14,6 +14,11 @@
 > 官方解释: Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化<br />
 大白话：对数据(data)统一的管理,如果涉及到了数据的处理，来，到vuex里面进出吧！就像是超市对商品的统一管理一样
 
+
+## 什么情况下使用vuex?
+
+只要有公共数据的使用，都可以使用vuex, 如果你的数据只是在单一组件中使用，而不是多个组件公用的，就没有多大必要使用vuex，直接从后台请求数据就行了
+
 ## 为了使用vuex而做的准备
 
 ### 安装vuex
@@ -43,6 +48,10 @@ import Vue from 'vue'; //首先引入vue
 import Vuex from 'vuex'; //引入vuex
 Vue.use(Vuex) 
 
+
+//在使用vuex绝大多数情况下，我们只要弄清楚 state,getters,mutations,actions 四个属性的意思就行了，这也是重中之重，一定要记住
+//看下面的写法和解释
+
 export default new Vuex.Store({
     state: { 
         // state 类似 data
@@ -59,6 +68,7 @@ export default new Vuex.Store({
     actions:{
         // actions 类似methods
         // 写方法对数据做出更改(异步操作)
+        // 比如在这里请求数据，做类似setTimeout的操作
     }
 })
 
@@ -72,73 +82,73 @@ export default new Vuex.Store({
 我们约定store中的数据是以下形式
 
 ```js
-state:{
-    goods: {
-        totalPrice: 0,
-        totalNum:0,
-        goodsData: [
+state: {
+    name: '极品粥铺',
+    goodsApi : {
+        minPrice: '20', //起送价格
+        deliveryPrice: '4', // 配送费
+        goods: [
             {
-                id: '1',
-                title: '好吃的苹果',
-                price: 8.00,
-                image: 'https://www.shangdian.com/static/pingguo.jpg',
-                num: 0
+                "id": "0000001",
+                "name": "皮蛋瘦肉粥",
+                "price": 10,
+                "oldPrice": "12",
+                "description": "咸粥",
+                "sellCount": 229,
+                "rating": 100,
+                "image": require('../assets/pdsrz.jpg'),
+                "num": 0,
+                "info": "皮收瘦肉粥是一种营养丰富的粥品，这种粥的主要食材是大米、瘦肉和皮蛋，它们的都含有大量的蛋白质和多种维生素以及适量的脂肪和微量元素，人们食用以后能快速把这些营养吸收，满足身体各器官对不同营养成分的需要。",
             },
+            ...,
             {
-                id: '2',
-                title: '美味的香蕉',
-                price: 5.00,
-                image: 'https://www.shangdian.com/static/xiangjiao.jpg',
-                num: 0
+                "id": "0000006",
+                "name": "银耳莲子粥",
+                "price": 12,
+                "oldPrice": "15",
+                "description": "甜粥",
+                "sellCount": 362,
+                "rating": 100,
+                "image": require('../assets/yelzz.jpg'),
+                "num": 0,
+                "info": "银耳性质平和，味甘、淡，无毒，具有润肺生津、滋阴养胃。益气安神，强心健脑等作用，有“滋阴补肾，润肺止咳。和胃益气之功”，是“润肺滋阴要品”。养生学家甚至认为其滋阴润肺的作用可与燕窝媲美。因其物美价廉，故人人都能享用"
             }
+
         ]
     }
 },
-getters:{ //其实这里写上这个主要是为了让大家明白他是怎么用的，
-    totalNum(state){
-        let aTotalNum = 0;
-        state.goods.goodsData.forEach((value,index) => {
-            aTotalNum += value.num;
+getters: {
+    //这里的数据本来是写在state.goodsApi里面的，写在这里主要是为了讲清楚getters的，以及其内部的写法
+    tatolPrice(state){ 
+        let tatolP = 0;
+        state.goodsApi.goods.forEach((val,index) => {
+            tatolP+= val.num * val.price;
+        });
+
+        if(tatolP>0){
+            tatolP = parseFloat(tatolP) + parseInt(state.goodsApi.deliveryPrice)
+        }else{
+            tatolP = 0;
+        }
+
+        return tatolP.toFixed(2);
+    },
+    tatolNum(state){
+        let tatolN = 0;
+        state.goodsApi.goods.forEach((val,index) => {
+            tatolN+= val.num;
         })
-        return aTotalNum;
-     },
-     totalPrice(state){
-        let aTotalPrice = 0;
-        state.goods.goodsData.forEach( (value,index) => {
-            aTotalPrice += value.num * value.price
-         })
-         return aTotalPrice.toFixed(2);
+        return tatolN;
     }
 },
-mutations:{
-    reselt(state,msg){
-        console.log(msg) //我执行了一次；
-        state.goods.totalPrice = this.getters.totalPrice;
-        state.goods.totalNum = this.getters.totalNum;
+mutations: {
+    goodsReduce(state,index){
+        if(state.goodsApi.goods[index].num > 0){
+            state.goodsApi.goods[index].num-=1;
+        }
     },
-    reduceGoods(state,index){ 
-        //第一个参数为默认参数，即上面的state,后面的参数为页面操作传过来的参数
-        state.goods.goodsData[index].num-=1;
-        
-        let msg = '我执行了一次'
-        this.commit('reselt',msg);
-    },
-    addGoods(state,index){
-        state.goods.goodsData[index].num+=1;
-        
-        let msg = '我执行了一次'
-        this.commit('reselt',msg);
-        /**
-            想要重新渲染store中的方法，一律使用commit 方法 
-            你可以这样写 commit('reselt',{
-                state: state
-            })
-            也可以这样写 commit({
-                type: 'reselt',
-                state: state 
-            })
-            主要看你自己的风格
-        **/
+    goodsAdd(state,index){
+        state.goodsApi.goods[index].num+=1;
     }
 },
 actions:{
@@ -155,45 +165,64 @@ actions:{
 ### 第一种方式使用store.js中的数据(直接使用)
 ```html
 <template>
-    <div id="goods" class="goods-box">
-        <ul class="goods-body">
-            <li v-for="(list,index) in goods.goodsData" :key="list.id">
-                <div class="goods-main">
-                    <img :src="list.image">
-                </div>
-                <div class="goods-info">
-                    <h3 class="goods-title">{{ list.title }}</h3>
-                    <p class="goods-price">¥ {{ list.price }}</p>
-                    <div class="goods-compute">
-                        <!--在dom中使用方法为：$store.commit()加上store.js中的属性的名称，示例如下-->
-                        <span class="goods-reduce" @click="$store.commit('reduceGoods',index)">-</span>
-                        <input readonly v-model="list.num" />
-                        <span class="goods-add" @click="$store.commit('addGoods',index)">+</span>
-                    </div>
-                </div>
-            </li>
-        </ul>
-        <div class="goods-footer">
-            <div class="goods-total">
-                合计：¥ {{ goods.totalPrice }}
-                <!--
-                    如果你想要直接使用一些数据，但是在computed中没有给出来怎么办？
-                    可以写成这样
-                    {{ $store.state.goods.totalPrice }}
-                    或者直接获取gettles里面的数据
-                    {{ $store.gettles.totalPrice }}
-                -->
-            </div>
-            <button class="goods-check" :class="{activeChecke: goods.totalNum <= 0}">去结账({{ goods.totalNum }})</button>
-        </div>
-    </div>
+    <section id="goods" class="goods-box">
+        <oHeader class="goods-header" :title="name"></oHeader> // 头部
+        <main class="goods-mian"> // 购物车主内容
+            <Scroll> // better-scroll组件,主要为了优化滚动条
+                <ul class="goods-list"> // 商品列表
+                    <li class="goods-item cui-flex" 
+                        v-for="(list,index) in goodsApi.goods"
+                        :key="list.id">
+                        <div class="goods-content">
+                            <img class="goods-view" :src="list.image" />    
+                        </div>  
+                        <div class="goods-info cui-flex-item cui-flex">
+                            <h3 class="goods-info-title">{{ list.name }}</h3>
+                            <div class="goods-description cui-flex-item">
+                                <p class="cui-ellipsis-3">{{ list.info }}</p>
+                            </div>
+                            <div class="goods-info-footer cui-flex cui-flex-algin">
+                                <div class="goods-price cui-flex-item">
+                                    <p class="new-price">现价: <b class="price-box">¥ <span class="price-info">{{ list.price }}</span></b></p>
+                                    <p class="old-price"><del>原价: ¥ {{ list.oldPrice }}</del></p>
+                                </div>  
+                                <div class="goods-cart cui-flex">
+                                    <span class="goods-btn reduce-btn" 
+                                        :class="{'goods-disable': list.num == 0}"
+                                        @click="onReduce(index)">-</span>
+                                    <div class="goods-input cui-flex-item">
+                                        <input class="goods-input-view"type="text" v-model="list.num" readonly="readonly" />
+                                    </div>  
+                                    <span  class="goods-btn add-btn" @click="onAdd(index)">+</span>
+                                </div>  
+                            </div>
+                        </div>  
+                    </li>   
+                </ul>   
+            </Scroll>   
+        </main>
+        <footer class="goods-footer cui-flex cui-flex-algin">
+            <div class="goods-footer-info cui-flex cui-flex-item cui-flex-algin">
+                <p class="goods-tatol-price">
+                    合计:<b class="price-box">¥ <span class="price-info">{{ $store.getters.tatolPrice || 0 }}</span></b></b>
+                </p>
+                <p class="cui-flex-item goods-delivery-price">
+                    配送费:¥ {{ goodsApi.deliveryPrice }}
+                </p>
+            </div>  
+            <button type="button" class="goods-submit" 
+            :class="{'goods-submit-active': $store.getters.tatolPrice >= parseFloat(goodsApi.minPrice) }">
+                {{ cartStatus }}({{ $store.getters.tatolNum }})
+            </button>   
+        </footer>
+    </section>
 </template>
 <script>
     export default {
         name: 'Goods',
         computed:{
-            goods(){
-                return this.$store.state.goods;
+            goodsApi(){
+                return this.$store.state.goodsApi;
             }
         }
     }
@@ -201,38 +230,61 @@ actions:{
 ```
 如果上面的方式写参数让你看的很别扭，我们继续看第二种方式
 
-### 第一种方式使用store.js中的数据(通过辅助函数使用)
+### 通过辅助函数使用storejs中的数据
 ```html
 <!--goods.vue 购物车页面-->
 <template>
-    <div id="goods" class="goods-box">
-        <ul class="goods-body">
-            <li v-for="(list,index) in goods.goodsData" :key="list.id">
-                <div class="goods-main">
-                    <img :src="list.image">
-                </div>
-                <div class="goods-info">
-                    <h3 class="goods-title">{{ list.title }}</h3>
-                    <p class="goods-price">¥ {{ list.price }}</p>
-                    <div class="goods-compute">
-                        <span class="goods-reduce" @click="goodsReduce(index)">-</span>
-                        <input readonly v-model="list.num" />
-                        <span class="goods-add" @click="goodsAdd(index)">+</span>
-                    </div>
-                </div>
-            </li>
-        </ul>
-        <div class="goods-footer">
-            <div class="goods-total">
-                合计：¥ {{ goods.totalPrice }}
-                <!--
-                    getters里面的数据可以直接这样写
-                    {{ totalPrice }}
-                -->
-            </div>
-            <button class="goods-check" :class="{activeChecke: goods.totalNum <= 0}">去结账({{ goods.totalNum }})</button>
-        </div>
-    </div>
+    <section id="goods" class="goods-box">
+        <oHeader class="goods-header" :title="name"></oHeader>
+        <main class="goods-mian">
+            <Scroll>
+                <ul class="goods-list">
+                    <li class="goods-item cui-flex" 
+                        v-for="(list,index) in goodsApi.goods"
+                        :key="list.id">
+                        <div class="goods-content">
+                            <img class="goods-view" :src="list.image" />    
+                        </div>  
+                        <div class="goods-info cui-flex-item cui-flex">
+                            <h3 class="goods-info-title">{{ list.name }}</h3>
+                            <div class="goods-description cui-flex-item">
+                                <p class="cui-ellipsis-3">{{ list.info }}</p>
+                            </div>
+                            <div class="goods-info-footer cui-flex cui-flex-algin">
+                                <div class="goods-price cui-flex-item">
+                                    <p class="new-price">现价: <b class="price-box">¥ <span class="price-info">{{ list.price }}</span></b></p>
+                                    <p class="old-price"><del>原价: ¥ {{ list.oldPrice }}</del></p>
+                                </div>  
+                                <div class="goods-cart cui-flex">
+                                    <span class="goods-btn reduce-btn" 
+                                        :class="{'goods-disable': list.num == 0}"
+                                        @click="onReduce(index)">-</span>
+                                    <div class="goods-input cui-flex-item">
+                                        <input class="goods-input-view"type="text" v-model="list.num" readonly="readonly" />
+                                    </div>  
+                                    <span  class="goods-btn add-btn" @click="onAdd(index)">+</span>
+                                </div>  
+                            </div>
+                        </div>  
+                    </li>   
+                </ul>   
+            </Scroll>   
+        </main>
+        <footer class="goods-footer cui-flex cui-flex-algin">
+            <div class="goods-footer-info cui-flex cui-flex-item cui-flex-algin">
+                <p class="goods-tatol-price">
+                    合计:<b class="price-box">¥ <span class="price-info">{{ tatolPrice || 0 }}</span></b></b>
+                </p>
+                <p class="cui-flex-item goods-delivery-price">
+                    配送费:¥ {{ goodsApi.deliveryPrice }}
+                </p>
+            </div>  
+            <button type="button" class="goods-submit" 
+            :class="{'goods-submit-active': tatolPrice >= parseFloat(goodsApi.minPrice) }">
+                {{ cartStatus }}({{ tatolNum }})
+            </button>   
+        </footer>
+    </section>
 </template>
 <script>
     import {mapState,mapGetters,mapMutations} from 'vuex';
@@ -325,10 +377,9 @@ store.state.b.goods //先找到模块的名字，再去调用属性
 
 ## 写在最后
 
-谢谢大家的阅读，如果本文让你能有所收获，深表荣幸，如果喜欢的, 多多给star 0.0
+谢谢大家的阅读，如果本文让你能有所收获，深表荣幸，如果喜欢的, **多多给star** 0.0
 
 最后打一波广告：欢迎大家关注我的微信公众号：大前端js，当然为了回馈大家关注，里面我放了一些学习资源，热烈欢迎大家关注交流前端方面但不局限前端方面的知识；
 
-> **之前发出来的有很多单词出错的地方，对这样的错误，深表歉意，也非常感谢大家的指正**
 
 > **原创不易，非商业转载时请注明出处与原文链接，商业转载请得到本人允许，谢谢！**
