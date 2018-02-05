@@ -1,6 +1,6 @@
 # vuexteaching
 
-> A Vue.js project
+> 震惊！喝个茶的学会了vuex
 
 ## Build Setup
 
