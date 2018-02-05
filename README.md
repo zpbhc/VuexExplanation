@@ -1,4 +1,4 @@
-# vuexteaching
+# 震惊！喝个茶的学会了vuex
 
 > 震惊！喝个茶的学会了vuex
 
