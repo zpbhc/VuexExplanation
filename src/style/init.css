@@ -1,0 +1,52 @@
+/*去除浏览器自带样式;*/
+*{box-sizing: border-box;margin: 0;padding: 0;}
+body{font: 14px/1 "微软雅黑";}
+:focus{outline:none;}
+i{font-style: normal;}
+a:hover{text-decoration:none;}
+ul,li,ol{list-style: none;}
+textarea{overflow:auto;resize:none;}
+input,textarea,button{outline: none;}
+img{border:none;vertical-align:middle;}
+h1,h2,h3,h4,h5,h6,p{font-weight: normal;}
+table{border-collapse:collapse;border-spacing:0;}
+a{text-decoration: none;cursor: pointer;color: #333;}
+article,aside,details,figcaption,figure,footer,header,menu,nav,section{display: block;}
+
+/*公共样式*/
+.cui-hidden{display: none;}
+.cui-show{display: block;}
+.cui-pull-left{float: left !important;}
+.cui-pull-right{float: right !important;}
+.cui-clearfix{display: block;width: 0;height: 0;border: none;visibility: hidden;overflow: hidden;clear: both;}
+.cui-clearfix-after:after{content: '';display: block;width: 0;height: 0;border: none;visibility: hidden;overflow: hidden;clear: both;}
+.cui-inline{display: inline;}
+.cui-inline-block{display: inline-block;}
+.cui-hide{display: none;}
+.cui-show{display: block;}
+.cui-ellipsis{overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+.cui-ellipsis-2{overflow: hidden;display: -webkit-box;-webkit-box-orient: vertical;text-overflow: ellipsis;-webkit-line-clamp: 2;}
+.cui-ellipsis-3{overflow: hidden;display: -webkit-box;-webkit-box-orient: vertical;text-overflow: ellipsis;-webkit-line-clamp: 3;}
+.cui-ellipsis-4{overflow: hidden;display: -webkit-box;-webkit-box-orient: vertical;text-overflow: ellipsis;-webkit-line-clamp: 4;}
+.cui-ellipsis-5{overflow: hidden;display: -webkit-box;-webkit-box-orient: vertical;text-overflow: ellipsis;-webkit-line-clamp: 5;}
+.cui-lg-radius{border-radius: 100%;}
+.cui-md-radius{border-radius:50%;}
+.cui-sm-radius{border-radius: 20%;}
+.cui-xs-radius{border-radius: 10%;}
+.cui-lg-main{position: relative;display: block;min-width: 1280px;margin: 0 auto;}
+.cui-md-main{position: relative;display: block;max-width: 1280px;min-width: 980px;margin: 0 auto;}
+.cui-sm-main{position: relative;display: block;max-width: 980px;min-width: 750px;margin: 0 auto;}
+.cui-xs-main{position: relative;display: block;max-width: 750px;margin: 0 auto;}
+.cui-main{position: relative;display: block;width: 100%;}
+.cui-flex-item{display: block;flex: 1;}
+.cui-flex-item-2{display: block;flex: 2;}
+.cui-flex-item-3{display: block;flex: 3;}
+.cui-flex{display: flex;}
+.cui-flex-center{display: flex;justify-content: center;}
+.cui-flex-middle{display: flex;align-items: center;}
+.cui-flex-algin{display: flex;justify-content: center;align-items: center;}
+.cui-text-left{text-align: left;}
+.cui-text-center{text-align: center;}
+.cui-text-right{text-align: right;flex-direction: row-reverse;}
+.cui-inline-reset>*{display: inline-block;vertical-align: middle;font-size: 14px;}
+.cui-inline-reset{font-size: 0;}
