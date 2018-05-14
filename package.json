@@ -2,7 +2,7 @@
   "name": "vuexteaching",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "PC201604151237\\Administrator <756791945@qq.com>",
+  "author": "vuex",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
